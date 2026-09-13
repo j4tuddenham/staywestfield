@@ -594,6 +594,9 @@
   .availability-loading{
     color:rgba(37,51,58,0.6); font-size:0.85rem; text-align:center; padding:2rem 0;
   }
+  .availability-iframe{
+    width:100%; height:600px; border:0; display:block;
+  }
   @media (max-width:600px){
     .availability-tab{padding:0.85rem 0.5rem; font-size:0.72rem;}
   }
@@ -1362,14 +1365,19 @@
   function loadInnStyleWidget(){
     if(innstyleWidgetLoaded || !availabilityPanelBody) return;
     innstyleWidgetLoaded = true;
-    const script = document.createElement('script');
-    script.src = 'https://developer.innstyle.co.uk/calendar.min.js';
-    script.onload = function(){
+    // Loaded inside an iframe (its own document) rather than injected
+    // directly into this page, because InnStyle's script uses
+    // document.write() internally - that only works safely within a
+    // freshly-parsed document, not one appended after the fact.
+    const iframe = document.createElement('iframe');
+    iframe.src = 'assets/availability-widget.html';
+    iframe.title = 'Check availability calendar';
+    iframe.className = 'availability-iframe';
+    iframe.onload = function(){
       const loading = document.getElementById('availabilityLoading');
       if(loading) loading.remove();
-      if(window.InnStyle) InnStyle('staywestfield');
     };
-    availabilityPanelBody.appendChild(script);
+    availabilityPanelBody.appendChild(iframe);
   }
 
   function openAvailability(){
