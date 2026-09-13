@@ -18,6 +18,8 @@
 <link rel="icon" href="images/logo.png">
 <link rel="preload" href="assets/fonts/public-sans-400.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/fraunces-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/fraunces-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/ibm-plex-mono-400.woff2" as="font" type="font/woff2" crossorigin>
 <style>
   :root{
     --slate:#25333a;
@@ -1465,14 +1467,21 @@
 
   const heroEl = document.querySelector('.hero');
   const heroScrim = document.querySelector('.hero-scrim');
+  // Cache the height instead of reading offsetHeight on every scroll event -
+  // repeatedly measuring a geometric property like this forces the browser
+  // to do a synchronous layout recalculation each time (a "forced reflow").
+  // It only actually needs re-measuring on load and on resize.
+  let heroHeight = heroEl ? (heroEl.offsetHeight || 1) : 1;
+  function recalcHeroHeight(){
+    if(heroEl) heroHeight = heroEl.offsetHeight || 1;
+  }
   function updateHeroFade(){
     if(!heroEl || !heroScrim) return;
-    const heroHeight = heroEl.offsetHeight || 1;
     const progress = Math.min(Math.max(window.scrollY / heroHeight, 0), 1);
     heroScrim.style.opacity = (progress * 0.8).toFixed(2);
   }
   window.addEventListener('scroll', updateHeroFade, {passive:true});
-  window.addEventListener('resize', updateHeroFade);
+  window.addEventListener('resize', function(){ recalcHeroHeight(); updateHeroFade(); });
   updateHeroFade();
 
   const heroImgA = document.querySelector('.hero-img-a');
