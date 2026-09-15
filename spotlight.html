@@ -1318,11 +1318,11 @@
 </footer>
 
 <div class="privacy-note">
-  <p>When you submit your email address above, it's stored securely and used only to send you occasional updates and offers about Westfield. It is not shared with or sold to third parties. You can <button type="button" class="privacy-unsub-trigger" id="unsubTrigger">unsubscribe</button> at any time. This site also uses Google Analytics cookies to understand how visitors use the site, but only once you've given consent. You can change your choice anytime via <button type="button" class="cookie-settings-trigger" id="cookieSettingsTrigger">cookie settings</button>.</p>
+  <p>When you submit your email address above, it's stored securely and used only to send you occasional updates and offers about Westfield. It is not shared with or sold to third parties. You can <button type="button" class="privacy-unsub-trigger" id="unsubTrigger">unsubscribe</button> at any time. This site also uses cookies to understand visitor usage and behaviour, helping us improve your experience, but only once you've given consent. You can change your choice anytime via <button type="button" class="cookie-settings-trigger" id="cookieSettingsTrigger">cookie settings</button>.</p>
 </div>
 
 <div class="cookie-banner" id="cookieBanner">
-  <p>We use cookies to run Google Analytics, which helps us understand how visitors use this site. These aren't set until you accept. See our privacy note above for more on how we handle your data.</p>
+  <p>We use cookies to understand how visitors use this site, helping us improve your experience. These aren't set until you accept. See our privacy note above for more on how we handle your data.</p>
   <div class="cookie-banner-actions">
     <button type="button" class="cookie-reject" id="cookieReject">Reject</button>
     <button type="button" class="cookie-accept" id="cookieAccept">Accept</button>
@@ -1385,20 +1385,29 @@
 </div>
 
 <script>
-  // Google Analytics is only loaded after the user consents — see the
-  // cookie banner below. Nothing analytics-related runs before that.
-  function loadGoogleAnalytics(){
-    if(window.gaLoaded) return;
-    window.gaLoaded = true;
-    var s = document.createElement('script');
-    s.async = true;
-    s.src = 'https://www.googletagmanager.com/gtag/js?id=G-RP1K0VXQ7T';
-    document.head.appendChild(s);
+  // Usage/behaviour analytics tools are only loaded after the user
+  // consents — see the cookie banner below. Nothing analytics-related
+  // runs before that.
+  function loadAnalyticsTools(){
+    if(window.analyticsLoaded) return;
+    window.analyticsLoaded = true;
+
+    // Google Analytics
+    var ga = document.createElement('script');
+    ga.async = true;
+    ga.src = 'https://www.googletagmanager.com/gtag/js?id=G-RP1K0VXQ7T';
+    document.head.appendChild(ga);
     window.dataLayer = window.dataLayer || [];
     function gtag(){ dataLayer.push(arguments); }
     window.gtag = gtag;
     gtag('js', new Date());
     gtag('config', 'G-RP1K0VXQ7T');
+
+    // Contentsquare
+    var cs = document.createElement('script');
+    cs.async = true;
+    cs.src = 'https://t.contentsquare.net/uxa/017b193914b29.js';
+    document.head.appendChild(cs);
   }
 
   const cookieBanner = document.getElementById('cookieBanner');
@@ -1415,7 +1424,7 @@
 
   const cookieChoice = localStorage.getItem('cookie_consent');
   if(cookieChoice === 'accepted'){
-    loadGoogleAnalytics();
+    loadAnalyticsTools();
   } else if(cookieChoice !== 'rejected'){
     showCookieBanner();
   }
@@ -1423,7 +1432,7 @@
   if(cookieAccept){
     cookieAccept.addEventListener('click', function(){
       localStorage.setItem('cookie_consent', 'accepted');
-      loadGoogleAnalytics();
+      loadAnalyticsTools();
       hideCookieBanner();
     });
   }
