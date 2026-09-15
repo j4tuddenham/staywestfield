@@ -1046,6 +1046,82 @@
   .footer-sitemap a{color:rgba(239,233,220,0.85); text-decoration:none;}
   .footer-sitemap a:hover{color:var(--gold);}
 
+  /* Spotlight: card grid + detail modal (blog-style entries) */
+  .spotlight-grid{
+    display:grid; grid-template-columns:repeat(auto-fit, minmax(300px,1fr));
+    gap:1.8rem; margin-top:0.5rem;
+  }
+  .spotlight-card{
+    display:block; width:100%; text-align:left;
+    background:var(--off-white); border:1px solid var(--line);
+    padding:0; margin:0; font:inherit; color:inherit; cursor:pointer;
+    overflow:hidden; transition:border-color .2s ease, transform .2s ease;
+  }
+  .spotlight-card:hover, .spotlight-card:focus-visible{
+    border-color:var(--amber); transform:translateY(-3px);
+  }
+  .spotlight-card-media{
+    display:block; aspect-ratio:4/3; overflow:hidden;
+  }
+  .spotlight-card-media img{
+    width:100%; height:100%; object-fit:cover; display:block;
+    transition:transform .5s ease;
+  }
+  .spotlight-card:hover .spotlight-card-media img{transform:scale(1.05);}
+  .spotlight-card-body{display:block; padding:1.5rem 1.6rem 1.7rem;}
+  .spotlight-card-body .eyebrow{margin-bottom:0.7rem;}
+  .spotlight-card-title{
+    display:block; font-family:'Fraunces', serif; font-weight:500;
+    font-size:1.2rem; margin-bottom:0.6rem; color:var(--slate-deep);
+  }
+  .spotlight-card-summary{
+    display:block; font-size:0.92rem; line-height:1.55;
+    color:rgba(37,51,58,0.78); margin-bottom:1rem;
+  }
+  .spotlight-card-cta{
+    display:inline-flex; align-items:center; gap:0.4em;
+    font-family:'IBM Plex Mono', monospace; font-size:0.76rem; letter-spacing:0.03em;
+    color:var(--amber);
+  }
+
+  .spotlight-modal-overlay{
+    position:fixed; inset:0; z-index:120;
+    background:rgba(26,36,41,0.72);
+    display:flex; align-items:center; justify-content:center;
+    padding:4vh 4vw;
+    opacity:0; visibility:hidden;
+    transition:opacity .25s ease, visibility .25s ease;
+  }
+  .spotlight-modal-overlay.is-open{opacity:1; visibility:visible;}
+  .spotlight-modal-box{
+    position:relative; background:var(--off-white);
+    max-width:680px; width:100%; max-height:92vh; overflow-y:auto;
+    transform:translateY(16px); transition:transform .25s ease;
+  }
+  .spotlight-modal-overlay.is-open .spotlight-modal-box{transform:translateY(0);}
+  .spotlight-modal-media{aspect-ratio:16/9; overflow:hidden;}
+  .spotlight-modal-media img{width:100%; height:100%; object-fit:cover; display:block;}
+  .spotlight-modal-body{padding:2rem 2rem 2.4rem;}
+  .spotlight-modal-body .eyebrow{margin-bottom:0.9rem;}
+  .spotlight-modal-body h2{font-size:1.6rem; margin-bottom:1.2rem; max-width:24ch;}
+  .spotlight-modal-body p{
+    margin-bottom:1.05rem; max-width:64ch; color:rgba(37,51,58,0.85);
+  }
+  .spotlight-modal-body .btn{margin-top:0.6rem;}
+  .spotlight-modal-close{
+    position:absolute; top:1rem; right:1rem; z-index:2;
+    width:38px; height:38px; border-radius:50%; border:none;
+    background:rgba(26,36,41,0.85); color:#fff;
+    font-size:1.5rem; line-height:1; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .spotlight-modal-close:hover{background:var(--slate-deep);}
+
+  @media (max-width:700px){
+    .spotlight-modal-box{max-height:100vh; height:100%;}
+    .spotlight-modal-overlay{padding:0;}
+  }
+
   @media (max-width:700px){
     .subhero{height:44vh; min-height:320px;}
     .breadcrumb{padding-top:5rem;}
@@ -1118,6 +1194,7 @@
       <a href="bedrooms.html">Bedrooms</a>
       <a href="ullswater.html">Ullswater</a>
       <a href="things-to-do.html">Things to Do</a>
+      <a href="spotlight.html">Spotlight</a>
       <a href="gallery.html">Gallery</a>
       <a href="booking.html">Book Now</a>
       <a class="nav-secondary" href="https://www.westfieldonullswater.co.uk" target="_blank" rel="noopener">The Concierge</a>
@@ -1146,6 +1223,7 @@
     <a href="ullswater.html">Ullswater</a>
     <a href="walking.html">Walking</a>
     <a href="things-to-do.html">Things to Do</a>
+    <a href="spotlight.html">Spotlight</a>
     <a href="food-drink.html">Food &amp; Drink</a>
     <a href="gallery.html">Gallery</a>
     <a href="booking.html" class="nav-gold-divider">Book Now</a>
@@ -1382,6 +1460,7 @@
       <a href="ullswater.html">Ullswater</a>
       <a href="walking.html">Walking</a>
       <a href="things-to-do.html">Things to Do</a>
+      <a href="spotlight.html">Spotlight</a>
       <a href="food-drink.html">Food &amp; Drink</a>
       <a href="gallery.html">Gallery</a>
       <a href="booking.html">Book Now</a>
@@ -1822,6 +1901,41 @@
       }, 2200);
     });
   }
+
+  // Spotlight cards: open the matching detail modal as an overlay.
+  let lastSpotlightTrigger = null;
+  function closeSpotlightModal(modal){
+    modal.classList.remove('is-open');
+    document.body.style.overflow = '';
+    if(lastSpotlightTrigger) lastSpotlightTrigger.focus();
+  }
+  document.querySelectorAll('.spotlight-card').forEach(function(card){
+    card.addEventListener('click', function(){
+      const modal = document.getElementById(card.getAttribute('data-modal-target'));
+      if(!modal) return;
+      lastSpotlightTrigger = card;
+      modal.classList.add('is-open');
+      document.body.style.overflow = 'hidden';
+      const closeBtn = modal.querySelector('.spotlight-modal-close');
+      if(closeBtn) closeBtn.focus();
+    });
+  });
+  document.querySelectorAll('.spotlight-modal-overlay').forEach(function(overlay){
+    const closeBtn = overlay.querySelector('.spotlight-modal-close');
+    if(closeBtn){
+      closeBtn.addEventListener('click', function(){ closeSpotlightModal(overlay); });
+    }
+    overlay.addEventListener('click', function(e){
+      if(e.target === overlay) closeSpotlightModal(overlay);
+    });
+  });
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'Escape'){
+      document.querySelectorAll('.spotlight-modal-overlay.is-open').forEach(function(overlay){
+        closeSpotlightModal(overlay);
+      });
+    }
+  });
 
 </script>
 </body>
