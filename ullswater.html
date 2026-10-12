@@ -1106,6 +1106,32 @@
     margin-bottom:1.05rem; max-width:64ch; color:rgba(37,51,58,0.85);
   }
   .spotlight-modal-body .btn{margin-top:0.6rem;}
+  .spotlight-modal-body h3{font-size:1.15rem; margin:1.9rem 0 0.7rem;}
+  .spotlight-modal-foot{
+    margin-top:1.8rem; padding-top:1.2rem; border-top:1px solid var(--line);
+    font-family:'IBM Plex Mono', monospace; font-size:0.74rem; letter-spacing:0.03em;
+    color:rgba(37,51,58,0.7); line-height:1.7;
+  }
+  .spotlight-modal-foot a{color:var(--amber);}
+
+  /* Visitor Ready badge, sits just above the footer */
+  .trust-badge{
+    background:var(--off-white);
+    padding:2.2rem 6vw;
+    display:flex; justify-content:center;
+    border-top:1px solid var(--line);
+  }
+  .trust-badge-crop{
+    width:min(210px, 56vw);
+    aspect-ratio:926/726;
+    overflow:hidden;
+  }
+  /* The source PNG has a transparent margin around the artwork; this
+     crops it away so the badge sits tightly and scales cleanly. */
+  .trust-badge-crop img{
+    display:block; width:108%; max-width:none; height:auto;
+    margin:-23.3% 0 0 -3.56%;
+  }
   .spotlight-modal-close{
     position:absolute; top:1rem; right:1rem; z-index:2;
     width:38px; height:38px; border-radius:50%; border:none;
@@ -1334,6 +1360,12 @@
 </section>
 
 </main>
+
+<aside class="trust-badge" aria-label="Visitor Ready accreditation">
+  <div class="trust-badge-crop">
+    <img src="images/visitor_ready.png" width="1000" height="1000" alt="Visitor Ready - Visit with confidence. Supported by the AA" loading="lazy" decoding="async">
+  </div>
+</aside>
 
 <footer>
   <nav class="footer-sitemap" aria-label="Site pages">
